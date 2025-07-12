@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-pyttsx3
+pydub
 python-multipart

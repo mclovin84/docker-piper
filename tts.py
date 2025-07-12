@@ -1,16 +1,10 @@
 from fastapi import FastAPI, HTTPException
-import pyttsx3
-import io
-import base64
+import subprocess
 import tempfile
 import os
+import base64
 
 app = FastAPI()
-
-# Initialize TTS engine once at startup
-engine = pyttsx3.init()
-engine.setProperty('rate', 150)  # Speed of speech
-engine.setProperty('volume', 0.9)  # Volume level
 
 @app.post("/synthesize")
 async def synthesize(text: str):
@@ -19,9 +13,20 @@ async def synthesize(text: str):
         with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_file:
             temp_filename = temp_file.name
         
-        # Generate speech and save to temp file
-        engine.save_to_file(text, temp_filename)
-        engine.runAndWait()
+        # Use espeak directly via subprocess
+        cmd = [
+            'espeak',
+            '-w', temp_filename,  # Write to file
+            '-s', '150',          # Speed (words per minute)
+            '-v', 'en',           # Voice (English)
+            text
+        ]
+        
+        # Run espeak
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            raise Exception(f"espeak failed: {result.stderr}")
         
         # Read the generated audio file
         with open(temp_filename, 'rb') as audio_file:
