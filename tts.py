@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from piper_tts import TTS
+from wyoming_piper import PiperTTS
 
 app = FastAPI()
-tts = TTS()
+tts = PiperTTS()
 
 @app.post("/synthesize")
 async def synthesize(text: str):
