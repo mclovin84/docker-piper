@@ -43,6 +43,6 @@ RUN \
 
 COPY root /
 
-VOLUME /config
+
 
 EXPOSE 10200
